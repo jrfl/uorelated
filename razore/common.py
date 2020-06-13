@@ -1,8 +1,7 @@
 import time
 import sys
 import math
-
-# Mostly from Credzba with a few additions from me
+import pandoraconstants as pc
 
 #smithX = 1899
 #smithY = 2147
@@ -168,94 +167,84 @@ def HealMe(wait=True):
     #Misc.SendMessage("Next heal time {} now {}".format(NextHealTime, time.time()))
 
 
-tinker_kitsID = 0x1EB8
-fletching_kitsID =  0x1022  
-woodID = 0x1BD7
-woodStorage = 0x44046D13
-shaftID = 0x1BD4
-metalID = 0x1BF2
-hatchetID = 0x0F43
-
-
 def MakeTinkerKits():
-    kit = Items.FindByID(tinker_kitsID, 0, Player.Backpack.Serial)
+    kit = Items.FindByID(pc.tinkerToolsId, 0, Player.Backpack.Serial)
     if kit == None:
         Misc.SendMessage("CANNOT MAKE TINKER KITS WITHOUT AT LEAST 1 IN PACK")
         sys.exit(0)
-    #
-    if Items.BackpackCount(metalID, 0) < 2:
+    if Items.BackpackCount(pc.metalId, 0) < 2:
         Misc.SendMessage("Need iron ingots in your pack to make tinker kit")
         sys.exit(0)
-    #
+
     Items.UseItem(kit)
-    Gumps.WaitForGump(949095101, 2000)
-    Gumps.SendAction(949095101, 8)
-    Gumps.WaitForGump(949095101, 2000)
-    Gumps.SendAction(949095101, 23) 
-    Gumps.WaitForGump(949095101, 2000)
-    Gumps.SendAction(949095101, 0)  
-    Gumps.WaitForGump(949095101, 2000) 
+    Gumps.WaitForGump(pc.tinkerGump, 2000)
+    Gumps.SendAction(pc.tinkerGump, 8)
+    Gumps.WaitForGump(pc.tinkerGump, 2000)
+    Gumps.SendAction(pc.tinkerGump, 23) 
+    Gumps.WaitForGump(pc.tinkerGump, 2000)
+    Gumps.SendAction(pc.tinkerGump, 0)  
+    Gumps.WaitForGump(pc.tinkerGump, 2000) 
     Target.Cancel()
 
 
 def MakeFletchingKits():
-    kit = Items.FindByID(tinker_kitsID, 0, Player.Backpack.Serial)
+    kit = Items.FindByID(pc.tinkerToolsId, 0, Player.Backpack.Serial)
     if kit == None:
         MakeTinkerKits()
-        kit = Items.FindByID(tinker_kitsID, 0, Player.Backpack.Serial)
+        kit = Items.FindByID(pc.tinkerToolsId, 0, Player.Backpack.Serial)
         if kit == None:
             Misc.SendMessage("Insufficient TINKER KITS TO MAKE FLETCHING KIT")
             sys.exit(0)
 
-    if Items.BackpackCount(metalID, 0) < 3:
+    if Items.BackpackCount(pc.metalId, 0) < 3:
         Misc.SendMessage("Need iron ingots in your pack to make fletching kit")
         sys.exit(0)
 
     Items.UseItem(kit)
-    Gumps.WaitForGump(949095101, 5000)
-    Gumps.SendAction(949095101, 8)
-    Gumps.WaitForGump(949095101, 5000)
-    Gumps.SendAction(949095101, 142)
-    Gumps.WaitForGump(949095101, 5000)
-    Gumps.SendAction(949095101, 0)
+    Gumps.WaitForGump(pc.tinkerGump, 5000)
+    Gumps.SendAction(pc.tinkerGump, 8)
+    Gumps.WaitForGump(pc.tinkerGump, 5000)
+    Gumps.SendAction(pc.tinkerGump, 142)
+    Gumps.WaitForGump(pc.tinkerGump, 5000)
+    Gumps.SendAction(pc.tinkerGump, 0)
 
 
 def MakeHatchet():    
-    kit = Items.FindByID(tinker_kitsID, 0, Player.Backpack.Serial)
+    kit = Items.FindByID(pc.tinkerToolsId, 0, Player.Backpack.Serial)
     if kit == None:
         Misc.SendMessage("Insufficient TINKER KITS TO MAKE FLETCHING KIT")
         sys.exit(0)
 
-    if Items.BackpackCount(metalID, 0) < 4:
+    if Items.BackpackCount(pc.metalId, 0) < 4:
         Misc.SendMessage("Need iron ingots in your pack to make fletching kit")
         sys.exit(0)
 
     Items.UseItem(kit)
-    Gumps.WaitForGump(949095101, 10000)
-    Gumps.SendAction(949095101, 8)
-    Gumps.WaitForGump(949095101, 10000)
-    Gumps.SendAction(949095101, 30)
-    Gumps.WaitForGump(949095101, 10000)
-    Gumps.SendAction(949095101, 0)    
+    Gumps.WaitForGump(pc.tinkerGump, 10000)
+    Gumps.SendAction(pc.tinkerGump, 8)
+    Gumps.WaitForGump(pc.tinkerGump, 10000)
+    Gumps.SendAction(pc.tinkerGump, 30)
+    Gumps.WaitForGump(pc.tinkerGump, 10000)
+    Gumps.SendAction(pc.tinkerGump, 0)    
 
 
 def MakeShovel():    
-    kit = Items.FindByID(tinker_kitsID, 0, Player.Backpack.Serial)
+    kit = Items.FindByID(pc.tinkerToolsId, 0, Player.Backpack.Serial)
     if kit == None:
         Misc.SendMessage("Insufficient TINKER KITS TO MAKE FLETCHING KIT")
         sys.exit(0)
 
-    if Items.BackpackCount(metalID, 0) < 4:
+    if Items.BackpackCount(pc.metalId, 0) < 4:
         Misc.SendMessage("Need iron ingots in your pack to make fletching kit")
         sys.exit(0)
 
     Items.UseItem(kit)
-    Gumps.WaitForGump(949095101, 2000)
-    Gumps.SendAction(949095101, 8)
-    Gumps.WaitForGump(949095101, 2000)
-    Gumps.SendAction(949095101, 72)
-    Gumps.WaitForGump(949095101, 2000)
-    Gumps.SendAction(949095101, 0)    
+    Gumps.WaitForGump(pc.tinkerGump, 2000)
+    Gumps.SendAction(pc.tinkerGump, 8)
+    Gumps.WaitForGump(pc.tinkerGump, 2000)
+    Gumps.SendAction(pc.tinkerGump, 72)
+    Gumps.WaitForGump(pc.tinkerGump, 2000)
+    Gumps.SendAction(pc.tinkerGump, 0)    
 
 def convertToEUO(val):
     i = (val ^ 69) +7

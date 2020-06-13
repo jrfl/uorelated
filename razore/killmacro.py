@@ -30,3 +30,7 @@ if enemy != -1:
     Player.ChatSay(4095, "all kill")
     Target.WaitForTarget(10000, False)
     Target.Last()
+    
+
+    
+

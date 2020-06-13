@@ -23,6 +23,7 @@
 import clr, time, thread
 import re
 shitremover  = re.compile("<[^>]+>")
+shitremover2  = re.compile("Rating:[ 0-9,\r\n]+")
 
 clr.AddReference('System')
 clr.AddReference('System.Drawing')
@@ -32,53 +33,62 @@ clr.AddReference('System.Data')
 import System
 from System.Collections.Generic import List
 from System.Drawing import Point, Color, Size
-from System.Windows.Forms import (Application, Button, Form, BorderStyle, 
+from System.Windows.Forms import (Application, Button, Form, BorderStyle,
     Label, FlatStyle, DataGridView, DataGridViewAutoSizeColumnsMode,
     DataGridViewSelectionMode, DataGridViewEditMode, CheckBox)
 from System.Data import DataTable
 
 def getFilteredProps(plist):
     res = []
-    for p in plist[1:]:
-        prop = shitremover.sub("", p).strip(" \r\n\t")
-        if prop.find("Weight:") == 0:
-            continue
-        elif prop.find("strength requirement ") == 0:
-            continue
-        elif prop.find("durability ") == 0:
-            continue
-        elif prop.find("one-handed weapon") == 0:
-            continue
-        elif prop.find("two-handed weapon") == 0:
-            continue
-        elif prop.find("lower requirements") == 0:
-            continue
-        elif prop.find("Melee Weapon") == 0:
-            continue
-        elif prop.find("Rating") == 0:
-            continue
-        elif prop.find("night sight") == 0:
-            continue
-        elif prop.find("Armor") == 0:
-            continue
-        elif prop.find("Clothing") == 0:
-            continue
-        elif prop.find("Jewellery") == 0:
-            continue
-        elif prop.find("Shield") == 0:
-            continue
-        elif prop.find("use best weapon skill") == 0:
-            continue
-        elif prop.find("Ammo:") == 0:
-            continue
-        elif prop.find("Ranged Weapon") == 0:
-            continue
-        elif prop.find("weapon speed") == 0:
-            continue
-        elif prop.find("Blessed") == 0:
-            continue
-        elif prop.find("Rating") == 0:
-            continue
+    rune = False
+    Misc.SendMessage("plist[0]: " + plist[0], 4095)
+    if plist[0].find("Imbuing Rune") > -1:
+        rune = True
+        prop = ""
+        for p in plist[1:]:
+            if rune:
+                if p.find("Weight:") == 0:
+                    continue
+                prop = shitremover.sub("", shitremover2.sub("", p)).replace("Use: ", "").strip(" \r\n")
+            else:
+                prop = shitremover.sub("", p).strip(" \r\n\t")
+
+                if prop.find("Weight:") == 0:
+                    continue
+                elif prop.find("strength requirement ") == 0:
+                    continue
+                elif prop.find("durability ") == 0:
+                    continue
+                elif prop.find("one-handed weapon") == 0:
+                    continue
+                elif prop.find("two-handed weapon") == 0:
+                    continue
+                elif prop.find("lower requirements") == 0:
+                    continue
+                elif prop.find("Melee Weapon") == 0:
+                    continue
+                elif prop.find("Rating") == 0:
+                    continue
+                elif prop.find("night sight") == 0:
+                    continue
+                elif prop.find("Armor") == 0:
+                    continue
+                elif prop.find("Clothing") == 0:
+                    continue
+                elif prop.find("Jewellery") == 0:
+                    continue
+                elif prop.find("Shield") == 0:
+                    continue
+                elif prop.find("use best weapon skill") == 0:
+                    continue
+                elif prop.find("Ammo:") == 0:
+                    continue
+                elif prop.find("Ranged Weapon") == 0:
+                    continue
+                elif prop.find("weapon speed") == 0:
+                    continue
+                elif prop.find("Blessed") == 0:
+                    continue
 
         prop = prop.replace("weapon", "wep")
         prop = prop.replace("damage", "dmg")
@@ -92,10 +102,6 @@ def getFilteredProps(plist):
         prop = prop.replace("stamina", "sta")
         prop = prop.replace("reflect", "refl")
 
-        
-
-
-
         res.append(prop)
 
     return "; ".join(res)
@@ -105,34 +111,34 @@ class Content(System.IComparable, System.IConvertible):
     ID = 0
     name = ''
     props = ''
-    
+
     def __init__(self, i, n, p):
         self.ID = i
         self.name = n
         self.props = p
-        
+
 class ChestForm(Form):
     CurVer = '1.0.1'
     ScriptName = 'Chest Content Viewer'
     Contents = []
-    
+
     def __init__(self, contents):
         self.Contents = contents
-        
+
         self.BackColor = Color.FromArgb(25,25,25)
         self.ForeColor = Color.FromArgb(231,231,231)
         self.Size = Size(500, 400)
         self.Text = '{0} - v{1}'.format(self.ScriptName, self.CurVer)
-                
+
         self.DataGridSetup()
-        
+
         self.cbHide = CheckBox()
         self.cbHide.Text = 'Hide'
         self.cbHide.Checked = True
         self.cbHide.BackColor = Color.FromArgb(25,25,25)
         self.cbHide.Location = Point(342, 326)
         self.cbHide.Size = Size(50, 30)
-        
+
         self.btnGet = Button()
         self.btnGet.Text = 'Get'
         self.btnGet.BackColor = Color.FromArgb(50,50,50)
@@ -141,13 +147,13 @@ class ChestForm(Form):
         self.btnGet.FlatStyle = FlatStyle.Flat
         self.btnGet.FlatAppearance.BorderSize = 1
         self.btnGet.Click += self.btnGetPressed
-        
+
         self.Controls.Add(self.DataGrid)
         self.Controls.Add(self.cbHide)
         self.Controls.Add(self.btnGet)
-        
+
         #self.DataGrid.Columns(0).Visible = False
-           
+
     def DataGridSetup(self):
         self.DataGrid = DataGridView()
         self.DataGrid.RowHeadersVisible = False
@@ -163,14 +169,14 @@ class ChestForm(Form):
         self.DataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         self.DataGrid.EditMode = DataGridViewEditMode.EditProgrammatically
         self.DataGrid.BorderStyle = BorderStyle.None
-        
+
     def btnGetPressed(self, sender, args):
         row = self.DataGrid.SelectedCells[0].RowIndex
-        
+
         if row == -1:
             Misc.SendMessage('{0}: No row selected.'.format(self.ScriptName), 33)
             return
-            
+
         col = self.DataGrid.SelectedCells[0].ColumnIndex
         serial = self.DataGrid.Rows[row].Cells[col].Value
         self.DeleteRow(serial)
@@ -179,29 +185,29 @@ class ChestForm(Form):
             Misc.Pause(300)
             Player.UseSkill('Hiding')
             t = thread.start_new_thread(self.HidingTimer, (1,))
-            
+
 
     def DeleteRow(self, serial):
         for r in xrange(self.DataGrid.DataSource.Rows.Count):
             row = self.DataGrid.DataSource.Rows[r]
             if row['ID'] == serial:
                 self.DataGrid.DataSource.Rows.Remove(row)
-                return        
-    
+                return
+
     def HidingTimer(self, num):
         for s in xrange(11):
             Player.HeadMessage(55,'Hiding Timer: {0}s'.format(11-s))
             Misc.Pause(1000)
-            
+
     def Data(self):
         data = DataTable()
         data.Columns.Add('ID', clr.GetClrType(str))
         data.Columns.Add('Name', clr.GetClrType(str))
         data.Columns.Add('Props', clr.GetClrType(str))
-        
+
         for content in self.Contents:
             data.Rows.Add(hex(content.ID), content.name, content.props)
-           
+
         return data
 
 contents = []
@@ -209,7 +215,7 @@ filetext = []
 
 filename = 'chest_{0}.txt'.format(time.strftime('%y%m%d%H%M%S'))
 
-Misc.SendMessage('Target a container to see its contents.', 76)       
+Misc.SendMessage('Target a container to see its contents.', 76)
 contid = Target.PromptTarget()
 if contid > -1:
     cont = Items.FindBySerial(contid)
@@ -219,11 +225,12 @@ if contid > -1:
     for i in cont.Contains:
         Items.WaitForProps(i, 8000)
         plist = list(Items.GetPropStringList(i))
-        props = getFilteredProps(plist)
-        plist[0] = shitremover.sub("", plist[0])
-        plist[0] = plist[0].strip()
-        contents.append(Content(i.Serial, plist[0], props))
-        filetext.append('{0} ({1})\n{2}\n'.format(plist[0], hex(i.Serial), props.replace('; ','\n')))
+        if len(plist) > 0:
+            props = getFilteredProps(plist)
+            plist[0] = shitremover.sub("", plist[0])
+            plist[0] = plist[0].strip()
+            contents.append(Content(i.Serial, plist[0], props))
+            filetext.append('{0} ({1})\n{2}\n'.format(plist[0], hex(i.Serial), props.replace('; ','\n')))
 
     if contents == []:
         Misc.SendMessage('It is either empty or not a container at all.', 33)
@@ -232,6 +239,8 @@ if contid > -1:
             f.write('\n'.join(t for t in filetext))
         form = ChestForm(contents)
         Application.Run(form)
-    
+
 else:
     Misc.SendMessage('No container was targeted.', 33)
+
+
